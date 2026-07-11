@@ -12,5 +12,14 @@ def write_file(working_directory: str, file_path: str, content: str) -> str:
     
         if valid_target_dir == False:
             return (f'Result for "{file_path}" directory: \n Error: Cannot write to "{file_path}" as it is outside the permitted working directory')
-        elif os.path.isfile(target) == False:
+        elif os.path.isdir(target) == True:
             return (f'Error: Cannot write to "{file_path}" as it is a directory')
+        elif os.path.dirname(file_path) == False:
+            os.makedirs(file_path, exist_ok=True )
+
+        with open(target, "w") as r:
+            r.write(content)
+
+        return (f'Successfully wrote to "{file_path}" ({len(content)} characters written)')
+    except Exception as e:
+        return Exception(f"Result for '{file_path}' file: \n Error: {e}")

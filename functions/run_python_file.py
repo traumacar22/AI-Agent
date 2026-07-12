@@ -1,6 +1,29 @@
 import os
 import subprocess
 
+schema_run_python_file = {
+    "type": "function",
+    "function": {
+        "name": "run_python_file",
+        "description": "Given that the target file is a python file, you have the option to pass arguments and run a python file.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "file_path": {
+                    "type": "string",
+                    "description": "Directory path to the python file you want to run.",
+                },
+                "args": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "optional parameter, allows custom inputs to the python files.",
+                },
+            },
+            "required": ["file_path"]
+        },
+    },
+}
+
 
 def run_python_file(
     working_directory: str, file_path: str, args: list[str] | None = None
@@ -28,7 +51,7 @@ def run_python_file(
         status = subprocess.run(command, cwd = work_path, capture_output= True, text = True, timeout = 30)
         
         if status.returncode != 0:
-            return f"Process exited with code {status.returncode}"
+            return f"Process exited with code {status.returncode} \nSTDOUT: {status.stdout} \n STDERR: {status.stderr}"
         elif len(status.stdout) == 0 and len(status.stderr) == 0:
             return "No output produced"
         

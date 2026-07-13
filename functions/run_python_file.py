@@ -35,7 +35,7 @@ def run_python_file(
 
         # Will be True or False
         valid_target_dir = os.path.commonpath([work_path, target]) == work_path
-        print(os.path.isdir(target))
+        #print(path.isdir(target)) #for trouble shooting
     
         if valid_target_dir == False:
             return (f'Result for "{file_path}" directory: \n Error: Cannot execute "{file_path}" as it is outside the permitted working directory')
@@ -58,5 +58,5 @@ def run_python_file(
         return f"STDOUT: {status.stdout} \n STDERR: {status.stderr}"
     
     except Exception as e:
-        return Exception(f"Error: executing Python file: {e}")
+        return (f"Error: executing Python file: {e}")
 

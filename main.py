@@ -26,37 +26,28 @@ def main() -> None:
     {"role": "system", "content": system_prompt},
     {"role": "user", "content": args.user_prompt},
     ]
+    for _ in range(20):
+        response = client.chat.completions.create(
+            model="openrouter/free",
+            messages = messages,
+            temperature = 0,
+            tools = available_functions,
+        )
 
-    response = client.chat.completions.create(
-        model="openrouter/free",
-        messages = messages,
-        temperature = 0,
-        tools = available_functions,
-    )
+        #print(f"Model used: {response.model}") #this line is for in case you want to troubleshoot how different models are performing
 
-    print(f"Model used: {response.model}")
+        message = response.choices[0].message
+        messages.append(message) #keeping track of Agent responses
 
-
-    #if args.verbose == True:
-    #    print(f"User prompt: {args.user_prompt}")
-    #    print(f"Prompt tokens: {response.usage.prompt_tokens}")
-    #    print(f"Response tokens: {response.usage.completion_tokens}")
-    #else:
-    #    pass
-
-    message = response.choices[0].message
-
-    print("Response:")
-    if len(message.tool_calls) > 0:
-        for tool_call in message.tool_calls:
-            #function_args = json.loads(tool_call.function.arguments or "{}")
-            result_message = call_function(tool_call, args.verbose)
-            if result_message["content"] == "":
-                raise Exception
-            elif args.verbose == True:
-                print(f"-> {result_message['content']}")
-    else:
-        print(message.content)
+        if message.tool_calls: #this is a truthy check. If there is a value then true basically
+            for tool_call in message.tool_calls:
+                result_message = call_function(tool_call, args.verbose)
+                messages.append(result_message) #keeping track of Agent responses
+                if args.verbose == True:
+                    print(f"-> {result_message['content']}")
+        else:
+            print(message.content)
+            break
 
 if __name__ == "__main__":
     main()
